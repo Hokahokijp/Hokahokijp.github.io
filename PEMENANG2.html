@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tampilkan Data dengan Efek Warna-Warni</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fce4ec;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      position: relative;
+      width: 350px;
+      height: auto; /* Mengubah tinggi menjadi auto untuk konten */
+      border: 5px solid #d67f60;
+      border-radius: 10px;
+      overflow: hidden;
+      padding: 2px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #d81b60;
+    }
+    .item {
+      background-color: #fff;
+      border: 1px solid #d81b60;
+      border-radius: 5px;
+      margin: 10px 0;
+      padding: 10px;
+    }
+    .rainbow {
+      font-weight: bold;
+      background: linear-gradient(90deg, red, orange, yellow, green, blue, violet);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: rainbow-animation 2s linear infinite;
+    }
+
+    /* Efek lampu warna-warni */
+    .light {
+      position: absolute;
+      width: 10px;
+      height: 14px;
+      border-radius: 0%;
+      animation: blink 1s infinite;
+    }
+
+    /* Warna lampu */
+    .light:nth-child(5) { background-color: green; }
+    .light:nth-child(1) { background-color: orange; }
+    .light:nth-child(2) { background-color:blue ; }
+    .light:nth-child(3) { background-color: black; }
+    .light:nth-child(5) { background-color: red; }
+    .light:nth-child(6) { background-color: yellow; }
+
+    /* Animasi kedip lampu */
+    @keyframes blink {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 3; }
+    }
+
+    /* Menempatkan lampu mengelilingi kotak */
+    .light:nth-child(2) { top: -1px; left: 5%; transform: translateX(-3%); }
+    .light:nth-child(1) { top: 5%; right: -1px; transform: translateY(-3%); }
+    .light:nth-child(4) { bottom: -8px; left: 50%; transform: translateX(-50%); }
+    .light:nth-child(3) { top: 50%; left: -8px; transform: translateY(-50%); }
+    .light:nth-child(6) { top: 2; left: 0; }
+    .light:nth-child(5) { bottom: 0; right: 1; }
+
+    /* Animasi warna pelangi */
+    @keyframes rainbow-animation {
+      0% { background-position: 0%; }
+      100% { background-position: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>PEMENANG ARISAN</h1>
+    <div id="dataContainer"></div>
+    <div class="light"></div>
+    <div class="light"></div>
+    <div class="light"></div>
+    <div class="light"></div>
+    <div class="light"></div>
+    <div class="light"></div>
+  </div>
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBUs2fKdtBtgV1qcj5hZsKGof6kCVJ9uXE",
+      authDomain: "login-sos-35c1d.firebaseapp.com",
+      databaseURL: "https://login-sos-35c1d-default-rtdb.firebaseio.com",
+      projectId: "login-sos-35c1d",
+      storageBucket: "login-sos-35c1d.appspot.com",
+      messagingSenderId: "434409381526",
+      appId: "1:434409381526:web:12e1ab9066170f0a0d6cb7"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase();
+
+    // Reference to the Nd node
+    const dataRef = ref(db, 'Nd');
+
+    // Function to get current date and time
+    function getCurrentDateTime() {
+      const now = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+      return now.toLocaleString('id-ID', options);
+    }
+
+    // Function to display data
+    onValue(dataRef, (snapshot) => {
+      const dataContainer = document.getElementById('dataContainer');
+      dataContainer.innerHTML = ''; // Clear previous data
+      snapshot.forEach(childSnapshot => {
+        const childData = childSnapshot.val();
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'item';
+        itemDiv.innerHTML = `
+          <strong class="rainbow">Nama:</strong> ${childData.name} <br>
+          <strong class="rainbow">Deskripsi:</strong> ${childData.description} <br>
+          <strong>Tanggal dan Waktu:</strong> ${getCurrentDateTime()}
+        `;
+        dataContainer.appendChild(itemDiv);
+      });
+    });
+  </script>
+
+</body>
+</html>
